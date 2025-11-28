@@ -1,54 +1,130 @@
-# React + TypeScript + Vite
+# ☁️ Daily-log 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+🔗 **배포 링크**: https://daily-log-nu.vercel.app/
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 프로젝트 소개
 
-## Expanding the ESLint configuration
+- **Daily-log**는 하루의 생각과 기록을 짧게 남길 수 있는 SNS형 웹 서비스입니다.  
+- 사용자는 회원가입 후 글과 이미지를 업로드하고, 다른 사람의 글에 좋아요와 댓글을 남기며 소통할 수 있습니다.  
+- 무한 스크롤, 다크모드, 비밀번호 재설정 등 실제 서비스에 가까운 기능들을 구현하여 **프론트엔드 전반의 흐름(인증, 상태 관리, UI, 비동기 처리)을 학습하고 경험하는 것**을 목표로 개발했습니다.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 요구사항 정의서
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| 구분 | ID | 요구사항 | 비고 |
+|------|------|-----------|-------|
+| 기능 | FR-01 | 사용자는 이메일로 회원가입할 수 있어야 한다. | Supabase Auth |
+| 기능 | FR-02 | 사용자는 로그인/로그아웃을 할 수 있어야 한다. | 세션 기반 인증 |
+| 기능 | FR-03 | 로그인된 사용자만 글 작성·좋아요·댓글 작성이 가능해야 한다. | 인가 처리 |
+| 기능 | FR-04 | 사용자는 비밀번호 재설정을 요청할 수 있어야 한다. | 이메일 발송 |
+| 기능 | FR-05 | 토큰 기반으로 비밀번호를 변경할 수 있어야 한다. | 토큰 검증 |
+| 기능 | FR-06 | 사용자는 텍스트 기반 글을 작성할 수 있어야 한다. |  |
+| 기능 | FR-07 | 사용자는 이미지를 업로드할 수 있어야 한다. | Supabase Storage |
+| 기능 | FR-08 | 사용자는 피드를 무한 스크롤 형태로 볼 수 있어야 한다. | useInfiniteQuery |
+| 기능 | FR-09 | 사용자는 게시글에 좋아요를 누르거나 취소할 수 있어야 한다. | Optimistic Update |
+| 기능 | FR-10 | 사용자는 댓글 및 대댓글을 작성할 수 있어야 한다. | 재귀 구조 |
+| 기능 | FR-11 | 댓글은 계층형(Tree 구조)으로 표현되어야 한다. |  |
+| 기능 | FR-12 | 사용자는 다크모드를 사용할 수 있어야 한다. | CSS 변수 |
+| 비기능 | NFR-01 | 모바일/PC 환경에서 모두 사용 가능해야 한다. | 반응형 |
+| 비기능 | NFR-02 | 이미지·데이터 로딩 시 사용자 경험을 저해하지 않아야 한다. | 로딩 UI |
+| 비기능 | NFR-03 | 인증/인가 처리 오류 시 사용자에게 적절한 메시지를 제공해야 한다. | 예외 처리 |
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+---
+## 주요 기능
+
+| 기능 | 사용 기술 | 상세 내용 |
+|------|-----------|-----------|
+| **인증 & 인가** | Supabase Auth / Zustand | 이메일 로그인/로그아웃, 세션 유지, 권한 제어 |
+| **비밀번호 재설정** | Supabase Auth | 토큰 기반 비밀번호 변경, 예외 처리 |
+| **피드 & 무한 스크롤** | React Query useInfiniteQuery | 끝 도달 시 자동 로드, 캐싱된 UX |
+| **좋아요** | React Query | 좋아요 상태 저장, Optimistic Update |
+| **대댓글** | 재귀 컴포넌트 | 깊이 제한 없는 계층형 구조, 수정/삭제 |
+| **다크모드** | CSS 변수 / LocalStorage | 다크·라이트 테마 토글, 사용자 설정 유지 |
+
+### 인증 & 인가
+- 이메일 기반 회원가입 / 로그인 / 로그아웃
+- Supabase Auth를 사용해 세션 기반 인증 처리
+- 로그인된 사용자만 글 작성·좋아요·댓글 작성 가능하도록 인가 처리
+
+### 비밀번호 재설정
+- 비밀번호 재설정 이메일 발송 기능
+- 토큰 기반 비밀번호 변경 페이지 구현
+- 잘못된/만료된 토큰에 대한 예외 처리
+
+### 피드 & 무한 스크롤
+- 최신 글이 위에 노출되는 타임라인 구조
+- TanStack Query의 `useInfiniteQuery`를 사용한 **무한 스크롤** 구현
+- 스크롤 끝에 도달하면 자동으로 다음 페이지 데이터 로드
+- 캐싱을 활용하여 새로고침/페이지 이동 시에도 부드러운 UX 제공
+
+### 좋아요 
+- 게시글 좋아요 / 좋아요 취소 토글 기능
+- 사용자가 이미 좋아요를 눌렀는지에 따른 상태 표시
+- Optimistic Update로 클릭 즉시 UI에 반영 후 서버 동기화
+
+### 대댓글
+- 댓글 → 대댓글 → 대대댓글 형태로 계속 달 수 있는 **계층형 댓글 구조**
+- 재귀 컴포넌트 구조로 설계하여 깊이에 상관없이 렌더링 가능
+- 각 댓글에 작성자, 작성 시간, 좋아요, 삭제 등 기능 연동
+
+
+### 다크모드
+- 다크/라이트 테마 토글 기능
+- CSS 변수 기반 테마 시스템 적용
+- 로컬 스토리지에 테마 설정을 저장해 **재접속 시에도 사용자 선호 유지**
+
+---
+
+## 기술 스택
+
+### Frontend
+- **React** (Vite)
+- **TypeScript**
+- **TanStack Query (React Query)** – 서버 상태 관리, 무한 스크롤
+- **Zustand** – UI/세션 등의 전역 상태 관리
+- **Tailwind CSS / UI 컴포넌트 라이브러리**
+
+### Backend & Infra
+- **Supabase**
+  - Auth: 이메일/비밀번호 기반 인증
+  - Database: 게시글, 사용자, 댓글, 좋아요 데이터 저장
+  - Storage: 이미지 파일 업로드 및 공개 URL 제공
+- **Vercel** – 프론트엔드 배포
+
+---
+
+## 결과 화면
+<table>
+  <tr>
+    <td align="center"><strong>메인페이지 - 라이트 모드</strong></td>
+    <td align="center"><strong>메인페이지 - 다크 모드</strong></td>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://github.com/user-attachments/assets/3db8b991-f8e9-40f9-9a40-2bd3d3555961" width="400"/>
+    </td>
+    <td>
+      <img src="https://github.com/user-attachments/assets/8cdc7bdc-a9aa-43e7-94ee-7606c39e1f7e" width="400" />
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><strong>프로필 페이지</strong></td>
+    <td align="center"><strong>댓글 기능</strong></td>
+  </tr>
+  <tr>
+    <td>
+      <img src="https://github.com/user-attachments/assets/90436274-6a93-4c6c-8fc4-f7c72ed06e4a" width="400" />
+    </td>
+    <td>
+      <img src="https://github.com/user-attachments/assets/38b454d4-d5b8-4f84-9987-4bff4fa8142d" width="400" />
+    </td>
+  </tr>
+</table>
+
+
+
+
