@@ -1,0 +1,54 @@
+import { useCommentsData } from "@/hooks/queries/use-comments-data";
+import CommentItem from "./comment-item";
+import Fallback from "../fallback";
+import Loader from "../loader";
+import type { Comment, NestedComment } from "@/types";
+
+function toNestedComments(comments: Comment[]): NestedComment[] {
+  const result: NestedComment[] = [];
+
+  comments.forEach((comment) => {
+    if (!comment.root_comment_id) {
+      result.push({ ...comment, children: [] });
+    } else {
+      const rootCommetIndex = result.findIndex(
+        (item) => item.id === comment.root_comment_id,
+      );
+
+      const parentComment = comments.find(
+        (item) => item.id === comment.parent_comment_id,
+      );
+
+      if (rootCommetIndex === -1) return;
+      if (!parentComment) return;
+
+      result[rootCommetIndex].children.push({
+        ...comment,
+        children: [],
+        parentComment,
+      });
+    }
+  });
+  return result;
+}
+
+export default function CommentList({ postId }: { postId: number }) {
+  const {
+    data: comments,
+    error: fetchCommentError,
+    isPending: isFetchCommentPending,
+  } = useCommentsData(postId);
+
+  if (fetchCommentError) return <Fallback />;
+  if (isFetchCommentPending) return <Loader />;
+
+  const nestedComments = toNestedComments(comments);
+
+  return (
+    <div className="flex flex-col gap-5">
+      {nestedComments.map((comment) => (
+        <CommentItem key={comment.id} {...comment} />
+      ))}
+    </div>
+  );
+}

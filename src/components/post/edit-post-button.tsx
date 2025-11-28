@@ -1,0 +1,24 @@
+import { useOpenEditPostModal } from "@/store/post-editor-modal";
+import { Button } from "../ui/button";
+import type { PostEntity } from "@/types";
+
+export default function EditPostButton(props: PostEntity) {
+  const openEditPostModal = useOpenEditPostModal();
+
+  const hadleButtonClick = () => {
+    openEditPostModal({
+      postId: props.id,
+      content: props.content,
+      imageUrls: props.image_urls,
+    });
+  };
+  return (
+    <Button
+      onClick={hadleButtonClick}
+      className="cursor-pointer"
+      variant={"ghost"}
+    >
+      수정
+    </Button>
+  );
+}
